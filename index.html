@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Upload a file from your phone, drop in peso coins, and collect your pages.">
+<title>SEPERKARBS PISO PRINT: coin-operated printing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F3F4F7;--sheet:#fff;--ink:#12131A;--muted:#5B6275;--line:#E1E4EB;--c:#00A6E0;--m:#E5007D;--y:#FFC400;--ok:#0E9F6E;--bad:#C81E63;--deck:#12131A;--deck-muted:#9AA0B2}
+@media (prefers-color-scheme:dark){:root{--paper:#0C0D11;--sheet:#171921;--ink:#F4F5F7;--muted:#A0A6B8;--line:#272B38;--deck:#1F2230;--bad:#FF5C93}}
+*{box-sizing:border-box}
+html{background:var(--paper);scroll-padding-top:70px}
+body{margin:0;color:var(--ink);background:var(--paper);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1,h2,.brand,.amount{font-family:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem;letter-spacing:-.02em;color:inherit;text-decoration:none}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--deck);display:grid;place-items:center}
+.logo svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav{display:flex;gap:20px}nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.95rem}nav a:hover{color:var(--ink)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start;padding-top:56px;padding-bottom:64px}
+h1{font-size:clamp(2.5rem,6vw,4.3rem);line-height:1;letter-spacing:-.035em;font-weight:800;margin:0 0 20px}
+.lead{font-size:1.2rem;max-width:30em;margin:0 0 22px}
+.prices{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0 0 22px;color:var(--muted)}
+.prices b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.6rem;color:var(--ink);margin-right:6px}
+.prices span:nth-child(1) b{box-shadow:inset 0 -.35em 0 color-mix(in srgb,var(--c) 45%,transparent)}
+.prices span:nth-child(2) b{box-shadow:inset 0 -.35em 0 color-mix(in srgb,var(--m) 40%,transparent)}
+.note{max-width:32em;color:var(--muted);font-size:.95rem;border-left:3px solid var(--y);padding-left:12px;margin:0}
+.kiosk{background:var(--sheet);border:1px solid var(--line);border-radius:28px;padding:14px;box-shadow:0 24px 48px -28px rgba(18,19,26,.35)}
+.credit{background:var(--deck);color:#fff;border-radius:20px;padding:18px 18px 16px}
+.credit .t{display:flex;justify-content:space-between;color:var(--deck-muted);font-size:.88rem}
+.tag{border:1px solid #3a3f52;border-radius:99px;padding:1px 9px;font-size:.78rem}
+.amount{display:flex;align-items:baseline;gap:4px;font-weight:800;letter-spacing:-.04em;margin:2px 0 12px}
+.amount .cur{font-size:1.8rem;color:var(--deck-muted)}.amount #credit{font-size:3.8rem;line-height:1}
+.bar4{display:flex;gap:3px;height:10px}.seg{flex:1;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.09)}
+.seg i{display:block;height:100%;width:0;transition:width .4s}
+.seg:nth-child(1) i{background:var(--c)}.seg:nth-child(2) i{background:var(--m)}.seg:nth-child(3) i{background:var(--y)}.seg:nth-child(4) i{background:#E9EBF2}
+.credit .b{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--deck-muted);font-size:.86rem}
+#paper.low{color:var(--y);font-weight:700}
+.pane{padding:14px 6px 4px}
+.drop{display:block;position:relative;text-align:center;padding:20px 12px;border:1.5px dashed color-mix(in srgb,var(--ink) 30%,var(--line));border-radius:16px;cursor:pointer}
+.drop:hover,.drop:focus-within{border-color:var(--c)}
+.drop strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drop small{color:var(--muted)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--paper);padding:5px;border-radius:14px;margin:14px 0}
+.mode button{border:0;background:transparent;color:var(--muted);font:inherit;padding:8px 4px;border-radius:10px;cursor:pointer;line-height:1.25}
+.mode button b{display:block;color:var(--ink)}.mode button small{font-size:.8rem}
+.mode button[aria-checked=true]{background:var(--sheet);box-shadow:0 1px 3px rgba(18,19,26,.2)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:600}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button,.coins button{height:40px;border-radius:12px;border:1px solid var(--line);background:var(--sheet);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.stepper button{width:40px;font-size:1.2rem}.stepper output{min-width:2.4ch;text-align:center;font-weight:700}
+.go{width:100%;height:52px;border:0;border-radius:14px;background:var(--line);color:var(--muted);font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer}
+.go.ready{background:var(--c);color:#04141D}.go:disabled{cursor:not-allowed}
+#msg,#repMsg{min-height:1.4em;margin:10px 2px 4px;font-weight:600;font-size:.94rem}
+#msg.ok,#repMsg.ok{color:var(--ok)}#msg.err,#repMsg.err{color:var(--bad)}
+.coins-l{margin:6px 2px 8px;color:var(--muted);font-size:.88rem}
+.coins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-bottom:6px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid color-mix(in srgb,var(--c) 70%,transparent);outline-offset:2px}
+section.s{padding:56px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(1.7rem,3.5vw,2.3rem);letter-spacing:-.025em;line-height:1.1;margin:0 0 24px}
+.steps{list-style:none;counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:0;margin:0}
+.steps li{counter-increment:s;padding-top:14px;border-top:4px solid var(--c)}
+.steps li:nth-child(2){border-color:var(--m)}.steps li:nth-child(3){border-color:var(--y)}
+.steps li::before{content:counter(s);font:800 1.6rem "Bricolage Grotesque",system-ui,sans-serif;display:block}
+.steps h3{margin:4px 0 6px;font-size:1.1rem}.steps p{margin:0;color:var(--muted)}
+.rep{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.rep p{color:var(--muted);max-width:30em}
+form{background:var(--sheet);border:1px solid var(--line);border-radius:22px;padding:20px;display:grid;gap:12px}
+label{font-weight:600;font-size:.92rem;display:grid;gap:5px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+input[type=file]{padding:8px}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.9rem}
+[hidden]{display:none!important}
+@media (max-width:860px){.hero,.rep{grid-template-columns:1fr;gap:32px}.steps{grid-template-columns:1fr}.hero{padding-top:36px}}
+@media (max-width:480px){.two{grid-template-columns:1fr}nav{gap:14px}nav a:first-child{display:none}.brand{font-size:.95rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="brand" href="#"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V4h10v4M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v6H7z"/></svg></span>SEPERKARBS PISO PRINT</a>
+  <nav><a href="#how">How it works</a><a href="#report">Report a problem</a></nav>
+</div></header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <h1>Print from your phone. Pay with coins.</h1>
+    <p class="lead">Upload a file, see the price, drop in pesos, and collect your pages. No account and no app to install.</p>
+    <p class="prices"><span><b>₱2</b>per black-and-white page</span><span><b>₱5</b>per color page</span></p>
+    <p class="note">The panel on this page is a working demo. A website cannot print: the real kiosk runs on a laptop or Raspberry Pi wired to a coin slot and a printer.</p>
+  </div>
+
+  <div class="kiosk" aria-label="SEPERKARBS PISO PRINT demo">
+    <div class="credit">
+      <div class="t"><span>Your credit</span><span class="tag">Demo</span></div>
+      <div class="amount" aria-live="polite"><span class="cur">₱</span><span id="credit">0</span></div>
+      <div class="bar4" aria-hidden="true"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
+      <div class="b"><span id="barL"></span><span id="paper"></span></div>
+    </div>
+    <div class="pane">
+      <label class="drop"><strong id="fileName">Tap to choose a file</strong><small>PDF, JPG or PNG, up to 25 MB</small>
+        <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png" aria-label="Choose a file to print"></label>
+      <div id="opts" hidden>
+        <div class="mode" role="radiogroup" aria-label="Print color">
+          <button type="button" role="radio" aria-checked="true" id="bw"><b>Black and white</b><small>₱2 per page</small></button>
+          <button type="button" role="radio" aria-checked="false" id="col"><b>Color</b><small>₱5 per page</small></button>
+        </div>
+        <div class="row"><span>Copies</span><div class="stepper"><button type="button" id="minus" aria-label="Fewer copies">−</button><output id="copies">1</output><button type="button" id="plus" aria-label="More copies">+</button></div></div>
+        <div class="row"><span>Total</span><span id="cost">₱0</span></div>
+      </div>
+      <button class="go" id="print" type="button" disabled>Choose a file first</button>
+      <div id="msg" role="status" aria-live="polite"></div>
+      <p class="coins-l">Insert a coin</p>
+      <div class="coins"><button type="button" data-p="1">₱1</button><button type="button" data-p="5">₱5</button><button type="button" data-p="10">₱10</button><button type="button" data-p="20">₱20</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="s"><div class="wrap">
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><h3>Upload from your phone</h3><p>Join the kiosk Wi-Fi, open the page, and choose a PDF, photo, or Office file. The page count and price appear right away.</p></li>
+    <li><h3>Insert your coins</h3><p>The coin slot counts your pesos and your credit updates live on your phone. The kiosk gives no change, so pay close to the total.</p></li>
+    <li><h3>Collect your pages</h3><p>Press Print. You are charged only after the printer accepts the job, so a printer error costs you nothing.</p></li>
+  </ol>
+</div></section>
+
+<section id="report" class="s"><div class="wrap rep">
+  <div>
+    <h2>Something wrong with your print?</h2>
+    <p>Wrong or error print, or a paper jam? Send a photo of the problem with your GCash name and number. The owner checks it and sends your refund to GCash within 3 days.</p>
+    <p>Photos and numbers go only to the shop owner.</p>
+  </div>
+  <form id="rep" novalidate>
+    <label>What went wrong
+      <select id="reason"><option>Wrong or error print</option><option>Paper jam</option><option>Other</option></select></label>
+    <label>Your message
+      <textarea id="note" rows="3" maxlength="500" placeholder="Tell the owner what happened"></textarea></label>
+    <label>Photo of the problem<input id="photo" type="file" accept="image/*" capture="environment"></label>
+    <div class="two">
+      <label>Amount paid (₱)<input id="amount" type="number" min="1" max="1000" inputmode="numeric" placeholder="10"></label>
+      <label>GCash number<input id="gnum" type="tel" inputmode="tel" autocomplete="tel" placeholder="09XXXXXXXXX"></label>
+    </div>
+    <label>GCash account name<input id="gname" type="text" autocomplete="name" placeholder="Name on your GCash"></label>
+    <div class="hp" aria-hidden="true"><label>Website<input id="website" tabindex="-1" autocomplete="off"></label></div>
+    <button class="go ready" id="send" type="submit">Send refund request</button>
+    <div id="repMsg" role="status" aria-live="polite"></div>
+  </form>
+</div></section>
+</main>
+
+<footer><div class="wrap">SEPERKARBS PISO PRINT. Coin-operated printing for shops.</div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const PRICE={bw:2,color:5},LOW=20;
+const S={credit:0,file:null,copies:1,color:false,paper:100,busy:false};
+const peso=n=>'₱'+n;
+const cost=()=>S.file?S.file.pages*S.copies*(S.color?PRICE.color:PRICE.bw):0;
+function say(t,type){$('msg').textContent=t;$('msg').className=type||'';}
+
+function render(){
+  const c=cost(),s=S.file?S.file.pages*S.copies:0;
+  $('credit').textContent=S.credit;
+  const pct=c?Math.min(100,S.credit/c*100):0;
+  document.querySelectorAll('.seg i').forEach((el,i)=>el.style.width=Math.max(0,Math.min(100,(pct-i*25)*4))+'%');
+  $('barL').textContent=!S.file?'Choose a file to see the price':S.credit>=c?'Enough credit':peso(c-S.credit)+' more to print';
+  $('paper').textContent='Bond paper: '+S.paper+(S.paper===1?' sheet':' sheets')+(S.paper<=LOW?', running low':'');
+  $('paper').classList.toggle('low',S.paper<=LOW);
+  $('fileName').textContent=S.file?S.file.name+' ('+S.file.pages+(S.file.pages>1?' pages)':' page)'):'Tap to choose a file';
+  $('opts').hidden=!S.file;
+  $('bw').setAttribute('aria-checked',String(!S.color));$('col').setAttribute('aria-checked',String(S.color));
+  $('copies').textContent=S.copies;$('cost').textContent=peso(c);
+  const b=$('print');b.classList.remove('ready');
+  if(S.busy){b.disabled=true;b.textContent='Printing…';}
+  else if(!S.file){b.disabled=true;b.textContent='Choose a file first';}
+  else if(S.credit<c){b.disabled=true;b.textContent='Add '+peso(c-S.credit)+' to print';}
+  else if(S.paper<s){b.disabled=true;b.textContent='Not enough paper';}
+  else{b.disabled=false;b.classList.add('ready');b.textContent='Print for '+peso(c);}
+}
+
+async function pdfPages(buf){
+  if(!window.pdfjsLib){
+    await new Promise((ok,no)=>{const e=document.createElement('script');e.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';e.onload=ok;e.onerror=no;document.head.appendChild(e);});
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  return (await pdfjsLib.getDocument({data:buf}).promise).numPages;
+}
+$('file').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  if(f.size>25*1048576){say('That file is over 25 MB. Try a smaller one.','err');return;}
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(!['pdf','jpg','jpeg','png'].includes(ext)){say('The demo reads PDF, JPG and PNG. Save Word or PowerPoint files as PDF first.','err');return;}
+  try{S.file={name:f.name,pages:ext==='pdf'?await pdfPages(await f.arrayBuffer()):1};S.copies=1;say('');}
+  catch(err){say("Couldn’t read that file. Try saving it as a PDF.",'err');}
+  render();
+};
+$('bw').onclick=()=>{S.color=false;render();};
+$('col').onclick=()=>{S.color=true;render();};
+$('minus').onclick=()=>{S.copies=Math.max(1,S.copies-1);render();};
+$('plus').onclick=()=>{S.copies=Math.min(20,S.copies+1);render();};
+document.querySelectorAll('.coins [data-p]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p;S.credit+=p;say('Received '+peso(p),'ok');render();});
+$('print').onclick=()=>{
+  const c=cost(),s=S.file.pages*S.copies;S.busy=true;render();
+  setTimeout(()=>{S.credit-=c;S.paper-=s;S.busy=false;S.file=null;S.copies=1;S.color=false;$('file').value='';
+    say('Done! On the real kiosk your pages come out now.','ok');render();},1500);
+};
+
+async function shrink(f){
+  const url=URL.createObjectURL(f);
+  const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=url;});
+  const k=Math.min(1,1280/Math.max(img.width,img.height));
+  const cv=document.createElement('canvas');cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
+  return cv.toDataURL('image/jpeg',.82);
+}
+function repSay(t,type){$('repMsg').textContent=t;$('repMsg').className=type||'';}
+$('rep').onsubmit=async e=>{
+  e.preventDefault();
+  const f=$('photo').files[0],reason=$('reason').value,note=$('note').value.trim();
+  if(!f)return repSay('Attach a photo of the problem.','err');
+  if(reason==='Other'&&!note)return repSay('Describe the problem in the message box.','err');
+  if(!$('amount').value)return repSay('Enter the amount you paid.','err');
+  if(!$('gname').value.trim()||!/^(09|\+639)\d{9}$/.test($('gnum').value.replace(/[\s-]/g,'')))return repSay('Enter your GCash name and a valid number (09XXXXXXXXX).','err');
+  let photo;
+  try{photo=await shrink(f);}catch(err){return repSay('Could not read that photo. Use a JPG or PNG.','err');}
+  $('send').disabled=true;repSay('Sending…');
+  try{
+    const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      reason,note,amount:$('amount').value,gcashName:$('gname').value,gcashNumber:$('gnum').value,website:$('website').value,photo})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error||'Could not send the request.');
+    e.target.reset();repSay('Request sent. Your refund will arrive in your GCash within 3 days.','ok');
+  }catch(err){repSay(err.message,'err');}
+  $('send').disabled=false;
+};
+render();
+</script>
+</body>
+</html>
